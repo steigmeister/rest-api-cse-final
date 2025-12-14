@@ -27,5 +27,20 @@ class LibraryAPITestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertGreater(len(response.get_json()), 0)
 
+    def test_add_author(self):
+        new_author = {
+            "name": "New Author",
+            "birth_year": 1990,
+            "nationality": "Testland"
+        }
+        response = self.app.post(
+            '/authors',
+            json=new_author,
+            headers={'Authorization': f'Bearer {self.token}'}
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertIn('message', response.get_json())
+
+
 if __name__ == '__main__':
     unittest.main()

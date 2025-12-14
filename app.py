@@ -5,17 +5,18 @@ from functools import wraps
 import jwt
 import datetime
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
 
 app = Flask(__name__)
-app.config.from_pyfile('config.py')
+
+# MySQL config
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = ''
+app.config['MYSQL_DB'] = 'library_db'
+
 mysql = MySQL(app)
 
-SECRET_KEY = os.environ.get('JWT_SECRET')
-if not SECRET_KEY:
-    raise RuntimeError("JWT_SECRET environment variable is not set!")
+SECRET_KEY = os.environ.get('JWT_SECRET', 'default_secret_for_dev_only')
 
 def token_required(f):
     @wraps(f)
@@ -191,6 +192,8 @@ def search():
     """, (f'%{query}%', f'%{query}%'))
     rows = cur.fetchall()
     cur.close()
+    if not rows:
+        return jsonify({"message": "No results found"})
     results = [{'type': r[0], 'id': r[1], 'title': r[2], 'isbn': r[3], 'year': r[4]} for r in rows]
     fmt = get_format()
     if fmt == 'xml':

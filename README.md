@@ -1,165 +1,166 @@
 ```markdown
 # 📚 Library REST API – CSE1 Final Project
 
-A secure, fully-featured **CRUD REST API** for managing a **Library database** (Authors & Books), built with **Flask**, **MySQL**, and **JWT authentication**. Supports **JSON** and **XML** output formats, includes **search**, **input validation**, and **automated tests**.
+A secure and fully-featured **CRUD REST API** for managing a **Library database** (Authors and Books), built with **Flask**, **MySQL**, and **JWT authentication**. Supports **JSON** and **XML** output formats, includes **search functionality**, **input validation**, and **comprehensive test coverage**.
 
 ---
 
-## ✅ Features
+## ✨ Features
 
-- ✅ **CRUD operations** for Authors and Books  
-- 🔒 **JWT authentication** for secure access  
-- 📦 **Dual output**: `?format=json` (default) or `?format=xml`  
-- 🔍 **Search endpoint**: `/search?q=...`  
-- 🧪 **Pytest coverage** for all core endpoints  
-- 🛡️ Proper **HTTP status codes**: 200, 201, 400, 401, 404  
-- 🌐 RESTful design compliant with CSE1 finals rubric
+- ✅ **Full CRUD operations** for Authors and Books  
+- 🔒 **JWT-based authentication** for protected endpoints  
+- 📦 **Dual output format**:  
+  - Default: **JSON**  
+  - Optional: **XML** via `?format=xml`  
+- 🔍 **Search endpoint**: `/search?q=<query>` (searches both authors and books)  
+- 🧪 **7 automated tests** using `pytest` (covers all core features)  
+- 🛡️ **Proper HTTP status codes**:  
+  - `200 OK`, `201 Created`  
+  - `400 Bad Request` (invalid input)  
+  - `401 Unauthorized` (missing/invalid token)  
+  - `404 Not Found` (resource not found)  
+- 🌐 RESTful design compliant with CSE1 grading rubric
 
 ---
 
 ## 🛠️ Installation
 
-> 💡 **Note**: This guide uses **Git Bash on Windows 11**
+### Prerequisites
+- **Python 3.10+**
+- **XAMPP** (or any MySQL server)
+- **Git**
 
-### 1. Clone the Repository
+### Steps
 
-```bash
-git clone https://github.com/steigmeister/library-rest-api-final.git
-cd library-rest-api-final
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/steigmeister/library-rest-api-final.git
+   cd library-rest-api-final
+   ```
 
-```
+2. **Set up MySQL Database**
+   - Start **XAMPP** → Launch **MySQL**
+   - Open **phpMyAdmin** (`http://localhost/phpmyadmin`)
+   - Create a database named `library_db`
+   - Import the provided `library_db.sql` (or run the table creation + seed SQL)
 
-### 2. Set Up MySQL Database
+3. **Create and activate virtual environment**
+   ```powershell
+   # Windows (PowerShell)
+   python -m venv venv
+   .\venv\Scripts\Activate.ps1
+   ```
 
-> Ensure **XAMPP** is installed and **MySQL is running**.
+4. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-- Open **phpMyAdmin** at `http://localhost/phpmyadmin`
-- Create a database named `library_db`
-- Import the provided `library_db.sql` **OR** run the following SQL:
+5. **Set JWT secret (environment variable)**
+   ```powershell
+   # PowerShell
+   $env:JWT_SECRET="your_strong_secret_here"
+   ```
+   > 🔐 **Never hardcode secrets in source code.**
 
-```sql
-CREATE TABLE Authors (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    birth_year INT,
-    nationality VARCHAR(50)
-);
-
-CREATE TABLE Books (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(200) NOT NULL,
-    isbn VARCHAR(20) UNIQUE,
-    publication_year INT,
-    author_id INT,
-    FOREIGN KEY (author_id) REFERENCES Authors(id) ON DELETE CASCADE
-);
-
-```
-
-### 3. Create and Activate Virtual Environment
-
-```bash
-python -m venv venv
-source venv/Scripts/activate  # On Windows Git Bash
-```
-
-### 4. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-> ✅ `requirements.txt` includes:  
-> `Flask`, `Flask-MySQLdb`, `PyJWT`, `pytest`, and secure transitive dependencies.
-
-### 5. Set JWT Secret (Environment Variable)
-
-Create a `.env` file (never committed):
-
-```bash
-echo "JWT_SECRET=$(python -c 'import secrets; print(secrets.token_urlsafe(32))')" > .env
-```
-
-✅ This generates a strong, random secret.
-
-### 6. Run the Application
-
-```bash
-python app.py
-```
-
-The API is now running at:  
-👉 **http://127.0.0.1:5000**
+6. **Run the application**
+   ```bash
+   python app.py
+   ```
+   The API is now running at: **http://127.0.0.1:5000**
 
 ---
 
-## 🧪 Running Tests
+## 🧪 Testing
 
+Run the full test suite:
 ```bash
 pytest test_app.py -v
 ```
 
 ✅ Expected output:
 ```
-5 passed in 0.30s
+7 passed in X.XXs
 ```
 
 Tests cover:
 - JWT login
-- JSON/XML output
-- CRUD operations
-- Search
-- Security (401 without token)
+- JSON and XML output
+- Create, Read, Update, Delete (Authors)
+- Search functionality
+- Security and validation
 
 ---
 
-## 📡 API Usage (via `curl` in Bash)
+## 📡 API Endpoints
 
-### 1. Get JWT Token
+> 🔑 All endpoints (except `/login`) require:  
+> `Authorization: Bearer <your_token>`
 
-```bash
-TOKEN=$(curl -s -X POST http://127.0.0.1:5000/login | jq -r '.token')
-echo "Token: $TOKEN"
+### Authentication
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `POST` | `/login` | Get JWT token (no auth required) |
+
+### Authors
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `GET` | `/authors` | List all authors |
+| `POST` | `/authors` | Create new author |
+| `PUT` | `/authors/<id>` | Update author by ID |
+| `DELETE` | `/authors/<id>` | Delete author by ID |
+
+### Books
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `GET` | `/books` | List all books |
+| `POST` | `/books` | Create new book |
+| `PUT` | `/books/<id>` | Update book by ID |
+| `DELETE` | `/books/<id>` | Delete book by ID |
+
+### Search
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| `GET` | `/search?q=<query>` | Search authors and books by name/title |
+
+### Output Format
+Append `?format=json` (default) or `?format=xml` to any `GET` endpoint.
+
+---
+
+## 📥 Example Requests (PowerShell)
+
+### Get JWT Token
+```powershell
+$token = (Invoke-RestMethod http://127.0.0.1:5000/login -Method POST).token
 ```
 
-> 💡 Install `jq` via: `choco install jq` (Windows) or `sudo apt install jq` (Linux)
-
-### 2. Get Authors (JSON)
-
-```bash
-curl -H "Authorization: Bearer $TOKEN" http://127.0.0.1:5000/authors
+### Get Authors in JSON
+```powershell
+Invoke-RestMethod http://127.0.0.1:5000/authors -Headers @{Authorization="Bearer $token"}
 ```
 
-### 3. Get Authors (XML)
-
-```bash
-curl -H "Authorization: Bearer $TOKEN" "http://127.0.0.1:5000/authors?format=xml"
+### Get Authors in XML
+```powershell
+(Invoke-WebRequest "http://127.0.0.1:5000/authors?format=xml" -Headers @{Authorization="Bearer $token"}).Content
 ```
 
-### 4. Search for "Rowling"
-
-```bash
-curl -H "Authorization: Bearer $TOKEN" "http://127.0.0.1:5000/search?q=Rowling"
-```
-
-### 5. Create New Author
-
-```bash
-curl -X POST http://127.0.0.1:5000/authors \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Octavia Butler", "birth_year": 1947, "nationality": "American"}'
+### Search for "Orwell"
+```powershell
+Invoke-RestMethod "http://127.0.0.1:5000/search?q=Orwell" -Headers @{Authorization="Bearer $token"}
 ```
 
 ---
 
 ## 🔐 Security
 
-- All endpoints (except `/login`) require:  
-  `Authorization: Bearer <token>`
-- Invalid/missing token → `401 Unauthorized`
-- Missing required fields (e.g., `name`) → `400 Bad Request`
-- Secret stored in `.env` → **never in code or Git**
+- JWT secret is loaded from environment variable (`JWT_SECRET`)
+- All sensitive endpoints are protected by `@token_required` decorator
+- Input validation prevents incomplete records (e.g., missing `name` → `400`)
+- No hardcoded credentials in source code
+
+> 💡 **Note**: Generate a strong secret using:  
+> `python -c "import secrets; print(secrets.token_urlsafe(32))"`
 
 ---
 
@@ -167,26 +168,12 @@ curl -X POST http://127.0.0.1:5000/authors \
 
 ```
 .
-├── app.py                 # Main Flask API
-├── test_app.py            # Pytest test suite
-├── requirements.txt       # Dependencies
-├── .gitignore             # Excludes venv, .env, cache
-├── .env                   # Local JWT secret (ignored by Git)
-└── README.md              # This file
+├── app.py                 # Main Flask application
+├── test_app.py            # Pytest test suite (7 tests)
+├── requirements.txt       # Project dependencies
+├── .gitignore             # Excludes venv, cache
+├── README.md              # This file
+└── library_db.sql         # Database dump (in submission package)
 ```
 
 ---
-
-
-## 📚 References
-
-- [Flask](https://flask.palletsprojects.com/)
-- [PyJWT](https://pyjwt.readthedocs.io/)
-- [pytest](https://docs.pytest.org/)
-- [Flask-MySQLdb](https://flask-mysqldb.readthedocs.io/)
-
----
-
-> **Built with ❤️ for CSE1 – Palawan State University**  
-> By: Troyjan Rana (BSCS-3, Block II)
-```

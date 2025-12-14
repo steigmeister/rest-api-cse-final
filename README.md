@@ -34,8 +34,8 @@ A secure and fully-featured **CRUD REST API** for managing a **Library database*
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/steigmeister/library-rest-api-final.git
-   cd library-rest-api-final
+   git clone https://github.com/steigmeister/rest-api-cse-final.git
+   cd rest-api-cse-final
    ```
 
 2. **Set up MySQL Database**

@@ -11,7 +11,7 @@ app.config.from_pyfile('config.py')
 
 mysql = MySQL(app)
 
-# JWT Secret Key
+# JWT Secret
 SECRET_KEY = 'library_secret_key_123'
 
 # JWT Auth Decorator
@@ -29,7 +29,7 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# Helper: dict list to XML
+# Helper: Convert dict list to XML
 def dict_to_xml(tag, d):
     elem = ET.Element(tag)
     for key, val in d.items():
@@ -43,7 +43,7 @@ def list_to_xml(root_tag, items, item_tag):
         root.append(dict_to_xml(item_tag, item))
     return ET.tostring(root, encoding='unicode')
 
-# get the format from param
+# Helper: Get format from query param
 def get_format():
     return request.args.get('format', 'json').lower()
 
@@ -52,7 +52,7 @@ def get_format():
 def login():
     token = jwt.encode({
         'user': 'user',
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        'exp': datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=24)
     }, SECRET_KEY, algorithm='HS256')
     return jsonify({'token': token})
 
@@ -201,7 +201,6 @@ def delete_book(id):
     mysql.connection.commit()
     cur.close()
     return jsonify({'message': 'Book deleted'})
-
 
 # --- SEARCH ENDPOINT ---
 @app.route('/search', methods=['GET'])

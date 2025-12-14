@@ -25,7 +25,7 @@ class LibraryAPITestCase(unittest.TestCase):
         response = self.app.get('/authors?format=xml', headers={'Authorization': f'Bearer {self.token}'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content_type, 'application/xml')
-        
+        # Try parsing XML
         ET.fromstring(response.data)
 
     def test_add_author(self):
